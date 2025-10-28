@@ -25,6 +25,7 @@ static uintptr_t syscall(uintptr_t which, uint64_t arg0, uint64_t arg1, uint64_t
   __sync_synchronize();
 
   tohost = (uintptr_t)magic_mem;
+  asm volatile ("fence.i" : : :);
   while (fromhost == 0)
     ;
   fromhost = 0;
@@ -56,12 +57,43 @@ void setStats(int enable)
 void __attribute__((noreturn)) tohost_exit(uintptr_t code)
 {
   tohost = (code << 1) | 1;
+  asm volatile ("fence.i" : : :);
   while (1);
 }
 
 uintptr_t __attribute__((weak)) handle_trap(uintptr_t cause, uintptr_t epc, uintptr_t regs[32])
 {
   tohost_exit(1337);
+}
+
+void cputchar(int x)
+{
+  tohost = (0x0101000000000000 | (unsigned char)x);
+  asm volatile ("fence.i" : : :);
+}
+
+void cputstring(const char* s)
+{
+  size_t len = strlen(s);
+  for (size_t i = 0; i < len; i++) {
+    cputchar(*s++);
+  }
+  cputchar('\n');
+}
+
+void put_uint32_hex(uint32_t x) {
+  char buf[10] = {0};
+
+  for(int i = 0; i < 8; i++) {
+      uint8_t value = (x & 0xF);
+      if(value >= 10) {
+          buf[7-i] = ((value-10) + 'A');
+      } else {
+          buf[7-i] = (value + '0');
+      }
+      x >>= 4;
+  }
+  cputstring(buf);
 }
 
 void exit(int code)
