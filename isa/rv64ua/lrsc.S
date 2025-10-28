@@ -12,6 +12,7 @@
 
 RVTEST_RV64U
 RVTEST_CODE_BEGIN
+RVTEST_WANT_AMO_EMU
 
 # get a unique core id
 la a0, coreid
