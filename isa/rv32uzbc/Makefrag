@@ -8,6 +8,7 @@ rv32uzbc_sc_tests = \
 	clmulr \
 
 rv32uzbc_p_tests = $(addprefix rv32uzbc-p-, $(rv32uzbc_sc_tests))
+rv32uzbc_pm_tests = $(addprefix rv32uzbc-pm-, $(rv32uzbc_sc_tests))
 rv32uzbc_v_tests = $(addprefix rv32uzbc-v-, $(rv32uzbc_sc_tests))
 rv32uzbc_ps_tests = $(addprefix rv32uzbc-ps-, $(rv32uzbc_sc_tests))
 

@@ -7,4 +7,5 @@ rv32uf_sc_tests = \
 	ldst move recoding \
 
 rv32uf_p_tests = $(addprefix rv32uf-p-, $(rv32uf_sc_tests))
+rv32uf_pm_tests = $(addprefix rv32uf-pm-, $(rv32uf_sc_tests))
 rv32uf_v_tests = $(addprefix rv32uf-v-, $(rv32uf_sc_tests))

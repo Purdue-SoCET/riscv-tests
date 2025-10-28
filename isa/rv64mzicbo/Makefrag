@@ -6,3 +6,4 @@ rv64mzicbo_sc_tests = \
 	zero \
 
 rv64mzicbo_p_tests = $(addprefix rv64mzicbo-p-, $(rv64mzicbo_sc_tests))
+rv64mzicbo_pm_tests = $(addprefix rv64mzicbo-pm-, $(rv64mzicbo_sc_tests))

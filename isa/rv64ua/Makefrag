@@ -8,4 +8,5 @@ rv64ua_sc_tests = \
 	lrsc \
 
 rv64ua_p_tests = $(addprefix rv64ua-p-, $(rv64ua_sc_tests))
+rv64ua_pm_tests = $(addprefix rv64ua-pm-, $(rv64ua_sc_tests))
 rv64ua_v_tests = $(addprefix rv64ua-v-, $(rv64ua_sc_tests))

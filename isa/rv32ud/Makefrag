@@ -10,4 +10,5 @@ rv32ud_sc_tests = \
 #        ldst move structural recoding \
 
 rv32ud_p_tests = $(addprefix rv32ud-p-, $(rv32ud_sc_tests))
+rv32ud_pm_tests = $(addprefix rv32ud-pm-, $(rv32ud_sc_tests))
 rv32ud_v_tests = $(addprefix rv32ud-v-, $(rv32ud_sc_tests))
