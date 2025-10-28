@@ -4,10 +4,10 @@
 # Yunsup Lee (yunsup@cs.berkeley.edu)
 #
 
-XLEN ?= 64
+XLEN ?= 32
 
 ifeq ($(XLEN),32)
-ABI ?= ilp32d
+ABI ?= ilp32  # ICEBOX(anyone): update to ilp32f when we support F or ilp32d when we support F + D
 endif
 ifeq ($(XLEN),64)
 ABI ?= lp64d
@@ -58,7 +58,8 @@ RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O2 -ffast-
 RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)/common/test.ld $(incs)
 RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles -lm -lgcc -T $(src_dir)/common/test.ld
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump --disassemble-all --disassemble-zeroes --section=.text --section=.text.startup --section=.text.init --section=.data
-RISCV_MARCH ?= rv$(XLEN)gc
+RISCV_OBJCOPY ?= $(RISCV_PREFIX)objcopy -O binary
+RISCV_MARCH ?= rv$(XLEN)imc_zicsr_zifencei_zba_zbb_zbs  # ICEBOX(anyone): update imc_zicsr_zifencei to gc when floats, doubles, and atomics are added to the core.
 RISCV_VMARCH ?= rv$(XLEN)gcv
 RISCV_SIM ?= spike --isa=rv$(XLEN)gcv
 
@@ -77,8 +78,12 @@ $(foreach bmark,$(vec_bmarks),$(eval $(call compile_template,$(bmark),$(RISCV_VM
 # Build and run benchmarks on riscv simulator
 
 bmarks_riscv_bin  = $(addsuffix .riscv,  $(bmarks))
+bmarks_riscv_rvb  = $(addsuffix .bin, $(bmarks))
 bmarks_riscv_dump = $(addsuffix .riscv.dump, $(bmarks))
 bmarks_riscv_out  = $(addsuffix .riscv.out,  $(bmarks))
+
+$(bmarks_riscv_rvb): %.bin: %.riscv
+	$$(RISCV_OBJCOPY) $< $@
 
 $(bmarks_riscv_dump): %.riscv.dump: %.riscv
 	$(RISCV_OBJDUMP) $< > $@

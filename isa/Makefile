@@ -49,12 +49,16 @@ RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
 RISCV_GCC_OPTS ?= -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles -Oz
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump --disassemble-all --disassemble-zeroes --section=.text --section=.text.startup --section=.text.init --section=.data
+RISCV_OBJCOPY ?= $(RISCV_PREFIX)objcopy -O binary
 RISCV_SIM ?= spike
 
 vpath %.S $(src_dir)
 
 #------------------------------------------------------------
 # Build assembly tests
+
+%.bin: %
+	$$(RISCV_OBJCOPY) $< $@
 
 %.dump: %
 	$(RISCV_OBJDUMP) $< > $@
@@ -138,6 +142,7 @@ $(eval $(call compile_template,rv64mi,-march=rv64g -mabi=lp64))
 $(eval $(call compile_template,hypervisor,-march=rv64gh -mabi=lp64))
 endif
 
+tests_bin = $(addsuffix .bin, $(tests))
 tests_dump = $(addsuffix .dump, $(tests))
 tests_hex = $(addsuffix .hex, $(tests))
 tests_out = $(addsuffix .out, $(filter rv64%,$(tests)))
