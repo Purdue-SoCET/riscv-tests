@@ -4,7 +4,7 @@
 # Yunsup Lee (yunsup@cs.berkeley.edu)
 #
 
-XLEN ?= 32
+XLEN ?= 64
 
 ifeq ($(XLEN),32)
 ABI ?= ilp32  # ICEBOX(anyone): update to ilp32f when we support F or ilp32d when we support F + D
@@ -32,13 +32,13 @@ base_bmarks = \
 	vvadd \
 	memcpy \
 	multiply \
-	# mm \
 	dhrystone \
 	spmv \
+	pmp \
+	# mm \
 	# mt-vvadd \
 	# mt-matmul \
 	# mt-memcpy \
-	pmp \
 
 vec_bmarks = \
 	vec-memcpy \

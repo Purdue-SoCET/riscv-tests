@@ -150,7 +150,7 @@ tests32_out = $(addsuffix .out32, $(filter rv32%,$(tests)))
 
 run: $(tests_out) $(tests32_out)
 
-junk += $(tests) $(tests_dump) $(tests_hex) $(tests_out) $(tests32_out)
+junk += $(tests) $(tests_bin) $(tests_dump) $(tests_hex) $(tests_out) $(tests32_out)
 
 #------------------------------------------------------------
 # Default
