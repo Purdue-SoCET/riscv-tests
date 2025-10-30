@@ -45,7 +45,7 @@ default: all
 # Build rules
 #--------------------------------------------------------------------
 
-RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
+RISCV_PREFIX ?= riscv64-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
 RISCV_GCC_OPTS ?= -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles -Oz
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump --disassemble-all --disassemble-zeroes --section=.text --section=.text.startup --section=.text.init --section=.data
@@ -58,7 +58,7 @@ vpath %.S $(src_dir)
 # Build assembly tests
 
 %.bin: %
-	$$(RISCV_OBJCOPY) $< $@
+	$(RISCV_OBJCOPY) $< $@
 
 %.dump: %
 	$(RISCV_OBJDUMP) $< > $@
@@ -155,7 +155,7 @@ junk += $(tests) $(tests_dump) $(tests_hex) $(tests_out) $(tests32_out)
 #------------------------------------------------------------
 # Default
 
-all: $(tests_dump)
+all: $(tests_dump) $(tests_bin)
 
 #------------------------------------------------------------
 # Clean up

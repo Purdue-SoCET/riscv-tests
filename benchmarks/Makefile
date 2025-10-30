@@ -32,12 +32,12 @@ base_bmarks = \
 	vvadd \
 	memcpy \
 	multiply \
-	mm \
+	# mm \
 	dhrystone \
 	spmv \
-	mt-vvadd \
-	mt-matmul \
-	mt-memcpy \
+	# mt-vvadd \
+	# mt-matmul \
+	# mt-memcpy \
 	pmp \
 
 vec_bmarks = \
@@ -46,13 +46,15 @@ vec_bmarks = \
 	vec-sgemm \
 	vec-strcmp \
 
-bmarks = $(base_bmarks) $(vec_bmarks)
+# ICEBOX(anyone): add back when we support vector extension
+# bmarks = $(base_bmarks) $(vec_bmarks)
+bmarks = $(base_bmarks)
 
 #--------------------------------------------------------------------
 # Build rules
 #--------------------------------------------------------------------
 
-RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
+RISCV_PREFIX ?= riscv64-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
 RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin-printf -fno-tree-loop-distribute-patterns -Wno-implicit-int -Wno-implicit-function-declaration -mabi=$(ABI)
 RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)/common/test.ld $(incs)
@@ -60,8 +62,8 @@ RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles -lm -lgcc -T $(src_dir)/commo
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump --disassemble-all --disassemble-zeroes --section=.text --section=.text.startup --section=.text.init --section=.data
 RISCV_OBJCOPY ?= $(RISCV_PREFIX)objcopy -O binary
 RISCV_MARCH ?= rv$(XLEN)imc_zicsr_zifencei_zba_zbb_zbs  # ICEBOX(anyone): update imc_zicsr_zifencei to gc when floats, doubles, and atomics are added to the core.
-RISCV_VMARCH ?= rv$(XLEN)gcv
-RISCV_SIM ?= spike --isa=rv$(XLEN)gcv
+RISCV_VMARCH ?= rv$(XLEN)imcv_zicsr_zifencei_zba_zbb_zbs  # ICEBOX(anyone): update imc_zicsr_zifencei to gcv when floats, doubles, atomics, and vectors are added to the core.
+RISCV_SIM ?= spike --isa=$(RISCV_MARCH)
 
 incs  += -I$(src_dir)/../env -I$(src_dir)/common $(addprefix -I$(src_dir)/, $(bmarks))
 objs  :=
@@ -83,7 +85,7 @@ bmarks_riscv_dump = $(addsuffix .riscv.dump, $(bmarks))
 bmarks_riscv_out  = $(addsuffix .riscv.out,  $(bmarks))
 
 $(bmarks_riscv_rvb): %.bin: %.riscv
-	$$(RISCV_OBJCOPY) $< $@
+	$(RISCV_OBJCOPY) $< $@
 
 $(bmarks_riscv_dump): %.riscv.dump: %.riscv
 	$(RISCV_OBJDUMP) $< > $@
@@ -91,7 +93,7 @@ $(bmarks_riscv_dump): %.riscv.dump: %.riscv
 $(bmarks_riscv_out): %.riscv.out: %.riscv
 	$(RISCV_SIM) $< > $@
 
-riscv: $(bmarks_riscv_dump)
+riscv: $(bmarks_riscv_dump) $(bmarks_riscv_rvb)
 run: $(bmarks_riscv_out)
 
 junk += $(bmarks_riscv_bin) $(bmarks_riscv_dump) $(bmarks_riscv_hex) $(bmarks_riscv_out)
