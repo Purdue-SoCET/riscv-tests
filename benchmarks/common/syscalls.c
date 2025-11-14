@@ -72,30 +72,6 @@ void cputchar(int x)
   asm volatile ("fence.i" : : :);
 }
 
-void cputstring(const char* s)
-{
-  size_t len = strlen(s);
-  for (size_t i = 0; i < len; i++) {
-    cputchar(*s++);
-  }
-  cputchar('\n');
-}
-
-void put_uint32_hex(uint32_t x) {
-  char buf[10] = {0};
-
-  for(int i = 0; i < 8; i++) {
-      uint8_t value = (x & 0xF);
-      if(value >= 10) {
-          buf[7-i] = ((value-10) + 'A');
-      } else {
-          buf[7-i] = (value + '0');
-      }
-      x >>= 4;
-  }
-  cputstring(buf);
-}
-
 void exit(int code)
 {
   tohost_exit(code);
@@ -141,7 +117,20 @@ void _init(int cid, int nc)
   thread_entry(cid, nc);
 
   // only single-threaded programs should ever get here.
+  uint32_t start_cycles, start_instrs, stop_cycles, stop_instrs;
+  uint32_t total_cycles, total_instrs;
+  printf("Start trigger!\n");
+  start_cycles = read_csr(mcycle);
+  start_instrs = read_csr(minstret);
+
   int ret = main(0, 0);
+
+  stop_cycles = read_csr(mcycle);
+  stop_instrs = read_csr(minstret);
+  total_cycles = stop_cycles - start_cycles;
+  total_instrs = stop_instrs - start_instrs;
+  printf("Total Cycles: %u\n", stop_cycles - start_cycles);
+  printf("Total Instructions: %u\n", stop_instrs - start_instrs);
 
   char buf[NUM_COUNTERS * 32] __attribute__((aligned(64)));
   char* pbuf = buf;
@@ -382,7 +371,7 @@ int printf(const char* fmt, ...)
   va_list ap;
   va_start(ap, fmt);
 
-  vprintfmt((void*)putchar, 0, fmt, ap);
+  vprintfmt((void*)cputchar, 0, fmt, ap);
 
   va_end(ap);
   return 0; // incorrect return value, but who cares, anyway?

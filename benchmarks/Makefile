@@ -96,7 +96,7 @@ $(bmarks_riscv_out): %.riscv.out: %.riscv
 riscv: $(bmarks_riscv_dump) $(bmarks_riscv_rvb)
 run: $(bmarks_riscv_out)
 
-junk += $(bmarks_riscv_bin) $(bmarks_riscv_dump) $(bmarks_riscv_hex) $(bmarks_riscv_out)
+junk += $(bmarks_riscv_bin) $(bmarks_riscv_dump) $(bmarks_riscv_hex) $(bmarks_riscv_out) $(bmarks_riscv_rvb)
 
 #------------------------------------------------------------
 # Default
