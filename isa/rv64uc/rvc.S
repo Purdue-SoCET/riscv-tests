@@ -6,6 +6,7 @@
 #
 # Test RVC corner cases.
 #
+# RVC test does not support multicore for now. Tests that fail in pm environment are disabled by PM_TEST_DISABLE
 
 #include "riscv_test.h"
 #include "test_macros.h"
@@ -39,7 +40,9 @@ RVTEST_CODE_BEGIN
   RVC_TEST_CASE (5, sp, 0x1234 + 496 - 512, c.addi16sp sp, -512)
 
   la a1, data
+#ifndef PM_TEST_DISABLE
   RVC_TEST_CASE (6, a2, 0xfffffffffedcba99, c.lw a0, 4(a1); addi a0, a0, 1; c.sw a0, 4(a1); c.lw a2, 4(a1))
+#endif
 #if __riscv_xlen == 64
   RVC_TEST_CASE (7, a2, 0xfedcba9976543211, c.ld a0, 0(a1); addi a0, a0, 1; c.sd a0, 0(a1); c.ld a2, 0(a1))
 #endif
@@ -135,7 +138,9 @@ RVTEST_CODE_BEGIN
 #endif
 
   la sp, data
+#ifndef PM_TEST_DISABLE
   RVC_TEST_CASE (40, a2, 0xfffffffffedcba99, c.lwsp a0, 12(sp); addi a0, a0, 1; c.swsp a0, 12(sp); c.lwsp a2, 12(sp))
+#endif
 #if __riscv_xlen == 64
   RVC_TEST_CASE (41, a2, 0xfedcba9976543211, c.ldsp a0, 8(sp); addi a0, a0, 1; c.sdsp a0, 8(sp); c.ldsp a2, 8(sp))
 #endif
